@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script>const fileUploadWorker = new Worker('./worker.js');</script>
+    <script>
+        function startUploadFile() {
+            const input = document.querySelector('#file-upload');
+            const files = Array.from(input.files);
+            for (let i = 0; i < files.length; i++) {
+                const currentFile = files[i];
+                var reader = new FileReader();
+                reader.readAsBinaryString(currentFile, 'UTF-8');
+                reader.onload = function (evt) {
+                    fileUploadWorker.postMessage([currentFile.name, evt.target.result]);
+                }
+                reader.onerror = function (evt) {
+                    console.error(evt);
+                    alert('an error has occured reading file \'' + currentFile.name + '\'.');
+                }
+            }
+        }</script>
+</head>
+
+<body>
+    <input type="file" id="file-upload" multiple /><button onclick="startUploadFile();">upload</button>
+</body>
+
+</html>
